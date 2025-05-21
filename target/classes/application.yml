@@ -4,9 +4,9 @@ server:
     include-message: always
     include-binding-errors: always
 
-spring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-spring.datasource.username=${DB_USER}
-spring.datasource.password=${DB_PASSWORD}
+spring.datasource.url=jdbc:postgresql://${PGHOST}:${PGPORT}/${POSTGRES_DB}
+spring.datasource.username=${PGUSER}
+spring.datasource.password=${POSTGRES_PASSWORD}
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 
