@@ -1,77 +1,214 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Analytics</title>
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Style Section -->
+    <style>
+        /* Header layout */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* Hide menu checkbox */
+        #menu-toggle {
+            display: none;
+        }
+
+        /* Burger icon */
+        .menu-icon {
+            display: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+
+        /* Menu styling */
+        .nav .menu {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav .menu li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav .menu li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .menu-icon {
+                display: block;
+            }
+
+            .nav .menu {
+                display: none;
+                flex-direction: column;
+                background-color: #4CAF50;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                padding: 1rem 0;
+            }
+
+            #menu-toggle:checked + .menu-icon + .menu {
+                display: flex;
+            }
+
+            .nav .menu li {
+                text-align: center;
+                padding: 0.5rem 0;
+            }
+        }
+
+        .container {
+            max-width: 600px;
+            background: white;
+            margin: 3rem auto;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .chart-card {
+            background: #ffffff;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .chart-card h3 {
+            text-align: center;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        canvas {
+            max-height: 400px;
+        }
+    </style>
 </head>
+
 <body>
-<h2>Expenditure Analytics</h2>
-<canvas id="myChart" width="400" height="200"></canvas>
+<header class="header">
+    <div class="logo">yourFinance</div>
+    <nav class="nav">
+        <input type="checkbox" id="menu-toggle" />
+        <label for="menu-toggle" class="menu-icon">&#9776;</label>
+        <ul class="menu">
+            <li><a th:href="@{/expenditure}">Add Expenses</a></li>
+            <li><a th:href="@{/your-expenditure}">Your Expenses</a></li>
+            <li><a href="/analytics">Expenses Analysis</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/profile">Profile</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="chart-container">
+    <div class="chart-card">
+        <h3>Expenditure by Category</h3>
+        <canvas id="categoryChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+        <h3>Spending Over Time</h3>
+        <canvas id="timeChart"></canvas>
+    </div>
+</div>
 
 <script th:inline="javascript">
-    let labels = /*[[${labels}]]*/ [];
-    let data = /*[[${data}]]*/ [];
+    /*<![CDATA[*/
+    const labels = [[${labels}]];
+    const data = [[${data}]];
 
-    // let labels = ["Food", "Travel"];
-    // let data = [120.50, 75.00];
+    const dates = [[${dates}]];
+    const amounts = [[${amounts}]];
 
-
-    new Chart(document.getElementById('myChart'), {
-        type: 'doughnut',
+    // Pie chart for category-wise data
+    const categoryCtx = document.getElementById('categoryChart');
+    new Chart(categoryCtx, {
+        type: 'pie',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Expenditure',
+                label: 'Expenditure by Category',
                 data: data,
-                backgroundColor: ['#4CAF50', '#FF6384', '#36A2EB', '#FFC107', '#8E44AD'],
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#8AFF33', '#FF9F40'
+                ]
             }]
         },
         options: {
             responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
                 }
             }
         }
     });
 
-    const ctx = document.getElementById('expenditureChart').getContext('2d');
-
-    const lineChart = new Chart(ctx, {
-        type: 'line', // or 'scatter'
+    // Line chart for date-wise data
+    const timeCtx = document.getElementById('timeChart');
+    new Chart(timeCtx, {
+        type: 'line',
         data: {
-            labels: [[${dates}]], // Dates from backend
+            labels: dates,
             datasets: [{
-                label: 'Expenditure Over Time',
-                data: [[${amounts}]], // Amounts from backend
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 2,
+                label: 'Spending Over Time',
+                data: amounts,
                 fill: false,
-                tension: 0.3
+                borderColor: 'rgba(75, 192, 192, 1)',
+                tension: 0.1
             }]
         },
         options: {
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Date'
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Amount'
-                    }
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
                 }
             }
         }
     });
-
-
+    /*]]>*/
 </script>
 </body>
-</html>
