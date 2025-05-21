@@ -5,6 +5,8 @@ import com.example.yourFinance.model.User;
 import com.example.yourFinance.repository.UserRepository;
 import com.example.yourFinance.service.ExpenditureService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -42,7 +45,6 @@ public class ExpenditureController {
         return "redirect:/your-expenditure";
     }
 
-
     @GetMapping("/your-expenditure")
     public String listExpenditures(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -53,4 +55,22 @@ public class ExpenditureController {
         return "your-expenditure";
     }
 
+    @GetMapping("/your-expenditure/filter")
+    public String listExpendituresWithParameters(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            @RequestParam(required = false) Expenditure.Category category,
+            @RequestParam(required = false) Double minAmount,
+            @RequestParam(required = false) Double maxAmount,
+            Model model) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        User user = userRepository.findByUsername(username).orElseThrow();
+
+        Specification<Expenditure> spec = com.example.yourFinance.spec.ExpenditureSpecification.filterBy(user, fromDate, toDate, category, minAmount, maxAmount);
+        List<Expenditure> items = expenditureService.filterExpenditures(spec);
+        model.addAttribute("items", items);
+        return "your-expenditure";
+    }
 }
