@@ -4,11 +4,11 @@ server:
     include-message: always
     include-binding-errors: always
 
-spring:
-  datasource:
-    url: ${JDBC_DATABASE_URL}
-    username: ${JDBC_DATABASE_USERNAME}
-    password: ${JDBC_DATABASE_PASSWORD}
+spring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+spring.datasource.username=${DB_USER}
+spring.datasource.password=${DB_PASSWORD}
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 
   jpa:
     hibernate:
@@ -27,3 +27,6 @@ spring:
 
   thymeleaf:
     cache: false
+
+
+
