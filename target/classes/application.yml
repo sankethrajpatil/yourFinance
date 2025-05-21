@@ -1,13 +1,14 @@
 server:
+  port: ${PORT:8080}
   error:
     include-message: always
     include-binding-errors: always
 
 spring:
   datasource:
-    password: root
-    url: jdbc:postgresql://localhost:5432/your_finance_db
-    username: postgres
+    url: ${JDBC_DATABASE_URL}
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -17,6 +18,7 @@ spring:
         format_sql: true
     show-sql: true
 
+spring:
   mail:
     host: localhost
     port: 1025
@@ -25,15 +27,3 @@ spring:
 
   thymeleaf:
     cache: false
-
-    properties:
-      mail:
-        smtp:
-          ssl:
-            trust: "*"
-          auth: true
-          starttls:
-            enable: true
-          connectiontimeout: 5000
-          timeout: 3000
-          writetimeout: 5000
