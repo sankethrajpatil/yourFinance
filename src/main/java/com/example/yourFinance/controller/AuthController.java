@@ -47,6 +47,7 @@ public class AuthController {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             // If no exception, success
+            SecurityContextHolder.getContext().setAuthentication(auth);
             return ResponseEntity.ok(Map.of("message", "Login successful"));
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

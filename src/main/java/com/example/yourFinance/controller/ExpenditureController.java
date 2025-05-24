@@ -51,16 +51,20 @@ public class ExpenditureController {
     }
 
 
-    @GetMapping("/api/your-expenditure")
+    @GetMapping("/your-expenditure")
     @ResponseBody
     public List<Expenditure> listExpenditures() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
+        System.out.println("Fetching expenditures for user: " + username);
+        System.out.println("Authentication principal: " + auth.getPrincipal());
+        System.out.println("Authentication name: " + username);
+        System.out.println("Authentication authorities: " + auth.getAuthorities());
         User user = userRepository.findByUsername(username).orElseThrow();
         return expenditureService.findByUser(user);
     }
 
-    @GetMapping("/api/your-expenditure/filter")
+    @GetMapping("/your-expenditure/filter")
     @ResponseBody
     public List<Expenditure> listExpendituresWithParameters(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
