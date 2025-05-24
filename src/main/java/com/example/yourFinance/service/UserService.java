@@ -7,6 +7,8 @@ import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Setter
@@ -29,4 +31,10 @@ public class UserService {
         return true;
     }
 
+    public boolean validateUser(String username, String password) {
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isEmpty()) return false;
+        User user = userOpt.get();
+        return passwordEncoder.matches(password, user.getPassword());
+    }
 }

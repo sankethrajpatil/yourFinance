@@ -6,9 +6,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    password: root
+    url: jdbc:postgresql://localhost:5432/your_finance_db
+    username: postgres
   jpa:
     hibernate:
       ddl-auto: update
@@ -18,5 +18,23 @@ spring:
         format_sql: true
     show-sql: true
 
+  mail:
+    host: localhost
+    port: 1025
+    username: hello
+    password: hello
+
   thymeleaf:
     cache: false
+
+    properties:
+      mail:
+        smtp:
+          ssl:
+            trust: "*"
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000

@@ -1,42 +1,58 @@
 package com.example.yourFinance.controller;
 
+import com.example.yourFinance.dto.LoginRequest;
+import com.example.yourFinance.dto.RegisterRequest;
 import com.example.yourFinance.service.UserService;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+import java.util.Map;
 
+@RestController
+@RequestMapping("/")
 public class AuthController {
 
+    private final AuthenticationManager authenticationManager;
     private final UserService userService;
 
-    public AuthController(UserService userService) {
+    // Constructor injection ONLY — remove @Autowired on fields
+    public AuthController(AuthenticationManager authenticationManager, UserService userService) {
+        this.authenticationManager = authenticationManager;
         this.userService = userService;
     }
 
-    @GetMapping("/register")
-    public String showRegisterForm() {
-        return "register";
-    }
-
     @PostMapping("/register")
-    public String register(@RequestParam String username,
-                           @RequestParam String password,
-                           Model model) {
-        boolean success = userService.registerUser(username, password);
-        if (!success) {
-            model.addAttribute("error", "Username already exists");
-            return "register";
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+        boolean isRegistered = userService.registerUser(request.getUsername(), request.getPassword());
+        if (!isRegistered) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "Username already exists"));
         }
-        return "redirect:/login";
+        return ResponseEntity.ok(Map.of("message", "Registration successful"));
     }
 
-    @GetMapping("/login")
-    public String showLoginForm() {
-        return "login";
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest request) {
+        try {
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            // If no exception, success
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            return ResponseEntity.ok(Map.of("message", "Login successful"));
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Invalid credentials"));
+        }
     }
 }
+
