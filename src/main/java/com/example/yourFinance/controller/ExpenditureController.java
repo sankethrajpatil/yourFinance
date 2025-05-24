@@ -7,6 +7,7 @@ import com.example.yourFinance.service.ExpenditureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,51 +28,54 @@ public class ExpenditureController {
     private final UserRepository userRepository;
 
     @GetMapping("/expenditure")
-    public String showForm(Model model) {
-        model.addAttribute("expenditure", new Expenditure());
-        model.addAttribute("categories", Arrays.asList(Expenditure.Category.values()));
-        return "expenditure";
+    @ResponseBody
+    public List<String> getExpenditureCategories() {
+        return Arrays.stream(Expenditure.Category.values())
+                .map(Enum::name)
+                .collect(Collectors.toList());
     }
+
 
     @PostMapping("/expenditure")
-    public String submitExpenditure(@ModelAttribute Expenditure expenditure) {
+    @ResponseBody
+    public ResponseEntity<String> submitExpenditure(@RequestBody Expenditure expenditure) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow();
+        User user = userRepository.findByUsername(username).orElseThrow();
 
-        expenditure.setDate(LocalDateTime.from(LocalDateTime.now()));
+        expenditure.setDate(LocalDateTime.now());
         expenditure.setUser(user);
         expenditureService.save(expenditure);
-        return "redirect:/your-expenditure";
+
+        return ResponseEntity.ok("Expenditure saved successfully");
     }
 
-    @GetMapping("/your-expenditure")
-    public String listExpenditures(Model model) {
+
+    @GetMapping("/api/your-expenditure")
+    @ResponseBody
+    public List<Expenditure> listExpenditures() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow();
-        model.addAttribute("items", expenditureService.findByUser(user));
-        return "your-expenditure";
+        User user = userRepository.findByUsername(username).orElseThrow();
+        return expenditureService.findByUser(user);
     }
 
-    @GetMapping("/your-expenditure/filter")
-    public String listExpendituresWithParameters(
+    @GetMapping("/api/your-expenditure/filter")
+    @ResponseBody
+    public List<Expenditure> listExpendituresWithParameters(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @RequestParam(required = false) Expenditure.Category category,
             @RequestParam(required = false) Double minAmount,
-            @RequestParam(required = false) Double maxAmount,
-            Model model) {
+            @RequestParam(required = false) Double maxAmount) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         User user = userRepository.findByUsername(username).orElseThrow();
 
-        Specification<Expenditure> spec = com.example.yourFinance.spec.ExpenditureSpecification.filterBy(user, fromDate, toDate, category, minAmount, maxAmount);
-        List<Expenditure> items = expenditureService.filterExpenditures(spec);
-        model.addAttribute("items", items);
-        return "your-expenditure";
+        Specification<Expenditure> spec = com.example.yourFinance.spec.ExpenditureSpecification
+                .filterBy(user, fromDate, toDate, category, minAmount, maxAmount);
+
+        return expenditureService.filterExpenditures(spec);
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,11 +21,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AnalyticsController {
 
+
     private final ExpenditureService expenditureService;
     private final UserRepository userRepository;
 
     @GetMapping("/analytics")
-    public String showAnalytics(Model model) {
+    @ResponseBody
+    public Map<String, Object> showAnalytics() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         User user = userRepository.findByUsername(username).orElseThrow();
@@ -33,9 +36,6 @@ public class AnalyticsController {
         Map<String, Double> categorySums = expenditureService.getTotalExpenditureByCategory(user);
         List<String> labels = new ArrayList<>(categorySums.keySet());
         List<Double> data = new ArrayList<>(categorySums.values());
-
-        model.addAttribute("labels", labels);
-        model.addAttribute("data", data);
 
         // Date-wise data
         List<Expenditure> expenditures = expenditureService.findByUser(user);
@@ -46,10 +46,12 @@ public class AnalyticsController {
                 .map(Expenditure::getAmount)
                 .collect(Collectors.toList());
 
-        model.addAttribute("dates", dates);
-        model.addAttribute("amounts", amounts);
+        Map<String, Object> response = new HashMap<>();
+        response.put("categoryLabels", labels);
+        response.put("categoryData", data);
+        response.put("dates", dates);
+        response.put("amounts", amounts);
 
-
-        return "analytics";
+        return response;
     }
 }
