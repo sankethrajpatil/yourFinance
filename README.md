@@ -43,8 +43,8 @@ If you're learning **React** and want to contribute to a real-world project, thi
 If you choose to contribute, your task will be to **furnish the UI** according to the following mockup:
 
 📷 **Mock Reference:**  
-*(Insert mock image below — replace this line with the actual image)*  
-`![UI Mock](./path-to-your-mock-image.png)`
+![UI Mock](https://raw.githubusercontent.com/sankethrajpatil/yourFinance/main_yourFinancev2/UI%20Mock/your-image-name.png)
+But please feel free to be creative
 
 🔧 Your contribution should:
 - Follow the structure and design shown in the mock
