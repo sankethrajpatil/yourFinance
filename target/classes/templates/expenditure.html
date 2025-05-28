@@ -11,30 +11,77 @@
             padding: 0;
         }
 
-        header {
+        /* Header layout */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
             background-color: #4CAF50;
             color: white;
-            padding: 1rem;
-            text-align: center;
-            position: relative;
         }
 
-        .logout {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            background-color: white;
-            color: #4CAF50;
-            border: 1px solid #4CAF50;
-            padding: 0.4rem 1rem;
-            text-decoration: none;
-            border-radius: 4px;
+        .logo {
+            font-size: 1.5rem;
             font-weight: bold;
         }
 
-        .logout:hover {
-            background-color: #4CAF50;
+        /* Hide menu checkbox */
+        #menu-toggle {
+            display: none;
+        }
+
+        /* Burger icon */
+        .menu-icon {
+            display: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+
+        /* Menu styling */
+        .nav .menu {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav .menu li a {
             color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav .menu li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .menu-icon {
+                display: block;
+            }
+
+            .nav .menu {
+                display: none;
+                flex-direction: column;
+                background-color: #4CAF50;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                padding: 1rem 0;
+            }
+
+            #menu-toggle:checked + .menu-icon + .menu {
+                display: flex;
+            }
+
+            .nav .menu li {
+                text-align: center;
+                padding: 0.5rem 0;
+            }
         }
 
         .container {
@@ -59,10 +106,15 @@
 
         input, select, button {
             width: 100%;
+            box-sizing: border-box;
             padding: 0.5rem;
             margin-bottom: 1rem;
             border-radius: 4px;
             border: 1px solid #ccc;
+        }
+
+        input, select {
+            margin-top: 2%;
         }
 
         button {
@@ -95,13 +147,26 @@
     </style>
 </head>
 <body>
-<header>
-    <h1>YourFinance</h1>
-    <a href="/logout" class="logout">Logout</a>
+<header class="header">
+    <div class="logo">yourFinance</div>
+    <nav class="nav">
+        <input type="checkbox" id="menu-toggle" />
+        <label for="menu-toggle" class="menu-icon">&#9776;</label>
+        <ul class="menu">
+            <li><a th:href="@{/expenditure}">Add Expenses</a></li>
+            <li><a th:href="@{/your-expenditure}">Your Expenses</a></li>
+            <li><a href="/analytics">Expenses Analysis</a></li>
+            <li><a href="/budgeting">Budgeting</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/profile">Profile</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </nav>
 </header>
 
 <div class="container">
     <h2>New Expenditure</h2>
+    <br>
     <form th:action="@{/expenditure}" th:object="${expenditure}" method="post">
         <label>Amount:
             <input type="number" th:field="*{amount}" step="0.01" required/>
@@ -118,7 +183,7 @@
     </form>
 
     <div class="links">
-        <a th:href="@{/your-expenditure}">View Your Expenditures</a>
+        <a th:href="@{/your-expenditure}">View your expenditures</a>
     </div>
 </div>
 </body>
