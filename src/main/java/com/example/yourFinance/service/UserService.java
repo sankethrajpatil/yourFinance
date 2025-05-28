@@ -15,7 +15,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public boolean registerUser(String username, String password) {
+    public boolean registerUser(String username, String password, Double monthlySalary, Integer numDependents) {
         if (userRepository.findByUsername(username).isPresent()) {
             return false;
         }
@@ -24,6 +24,8 @@ public class UserService {
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(User.Role.USER);
+        user.setMonthlySalary(monthlySalary);
+        user.setNumDependents(numDependents);
 
         userRepository.save(user);
         return true;

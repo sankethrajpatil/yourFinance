@@ -1,6 +1,7 @@
 <head>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@4.0.0/dist/chartjs-chart-matrix.min.js"></script>
 
     <!-- Style Section -->
     <style>
@@ -117,9 +118,11 @@
             margin-bottom: 1rem;
         }
 
+
         canvas {
             max-height: 400px;
         }
+
     </style>
 </head>
 
@@ -133,12 +136,31 @@
             <li><a th:href="@{/expenditure}">Add Expenses</a></li>
             <li><a th:href="@{/your-expenditure}">Your Expenses</a></li>
             <li><a href="/analytics">Expenses Analysis</a></li>
+            <li><a href="/budgeting">Budgeting</a></li>
             <li><a href="/about">About Us</a></li>
             <li><a href="/profile">Profile</a></li>
             <li><a href="/logout">Logout</a></li>
         </ul>
     </nav>
 </header>
+
+<div class="analysis-card" style="background:#f8f9fa; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.04); padding:1.5rem; margin-bottom:1.5rem; max-width:400px;">
+    <h3>Monthly Financial Summary</h3>
+    <table style="width:100%;border-collapse:collapse;">
+        <tr>
+            <td style="font-weight:bold;">Monthly Salary:</td>
+            <td th:text="${monthlyStats.salary}"></td>
+        </tr>
+        <tr>
+            <td style="font-weight:bold;">Total Expenditure:</td>
+            <td th:text="${monthlyStats.expenditure}"></td>
+        </tr>
+        <tr>
+            <td style="font-weight:bold;">Total Savings for the Month:</td>
+            <td th:text="${monthlyStats.savings}"></td>
+        </tr>
+    </table>
+</div>
 
 <div class="chart-container">
     <div class="chart-card">
@@ -150,6 +172,7 @@
         <h3>Spending Over Time</h3>
         <canvas id="timeChart"></canvas>
     </div>
+
 </div>
 
 <script th:inline="javascript">
@@ -210,5 +233,7 @@
         }
     });
     /*]]>*/
+
 </script>
+
 </body>

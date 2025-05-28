@@ -39,9 +39,22 @@ public class Expenditure {
     private User user;
 
     public enum Category {
-        FOOD, TRANSPORT, ENTERTAINMENT, BILLS, OTHER
+        FOOD,
+        TRANSPORT,
+        ENTERTAINMENT,
+        BILLS,
+        OTHER,
+        RENT,
+        HEALTHCARE,
+        EDUCATION,
+        GROCERIES,
+        UTILITIES,
+        SHOPPING,
+        SAVINGS,
+        GIFTS,
+        INSURANCE,
+        TRAVEL
     }
-
 
     public void setUser(User user) {
         this.user = user;

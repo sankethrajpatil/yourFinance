@@ -1,7 +1,6 @@
 package com.example.yourFinance.model;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "users")
@@ -18,6 +17,10 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    // NEW FIELDS
+    private Double monthlySalary;
+    private Integer numDependents;
 
     public Long getId() {
         return id;
@@ -49,6 +52,23 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    // NEW GETTERS AND SETTERS
+    public Double getMonthlySalary() {
+        return monthlySalary;
+    }
+
+    public void setMonthlySalary(Double monthlySalary) {
+        this.monthlySalary = monthlySalary;
+    }
+
+    public Integer getNumDependents() {
+        return numDependents;
+    }
+
+    public void setNumDependents(Integer numDependents) {
+        this.numDependents = numDependents;
     }
 
     public enum Role {

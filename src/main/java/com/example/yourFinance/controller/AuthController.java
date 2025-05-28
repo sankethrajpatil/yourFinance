@@ -26,8 +26,10 @@ public class AuthController {
     @PostMapping("/register")
     public String register(@RequestParam String username,
                            @RequestParam String password,
+                           @RequestParam(required = false) Double monthlySalary,
+                           @RequestParam(required = false) Integer numDependents,
                            Model model) {
-        boolean success = userService.registerUser(username, password);
+        boolean success = userService.registerUser(username, password, monthlySalary, numDependents);
         if (!success) {
             model.addAttribute("error", "Username already exists");
             return "register";

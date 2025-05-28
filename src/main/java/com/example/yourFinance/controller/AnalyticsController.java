@@ -46,8 +46,20 @@ public class AnalyticsController {
                 .map(Expenditure::getAmount)
                 .collect(Collectors.toList());
 
+        // Earnings cards
+        Map<String, Double> monthlyStats = expenditureService.getMonthlyAnalysis(user);
+
         model.addAttribute("dates", dates);
         model.addAttribute("amounts", amounts);
+        model.addAttribute("monthlyStats", monthlyStats);
+
+        // Recurring Expenses Bar Chart
+        model.addAttribute("recurringLabels", expenditureService.getRecurringExpenseLabels());
+        model.addAttribute("recurringData", expenditureService.getRecurringExpenseAmounts());
+
+        // Expense Heatmap (Calendar Heatmap)
+        model.addAttribute("heatmapMatrix", expenditureService.getHeatmapMatrix());
+        model.addAttribute("heatmapDates", expenditureService.getHeatmapDays());
 
 
         return "analytics";
